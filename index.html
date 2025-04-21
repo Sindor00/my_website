@@ -4,18 +4,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Zamonaviy Timer</title>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --dark-color: #2d3436;
+            --light-color: #f5f6fa;
+            --danger-color: #ff7675;
+            --warning-color: #fdcb6e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-color);
+        }
+
+        .timer-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-start {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+
+        .btn-pause {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-stop {
+            background-color: var(--danger-color);
+            color: var(--light-color);
+        }
+
+        .btn-reset {
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+        }
+
+        .title {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .timer-display {
+                font-size: 3.5rem;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<style>
-    h1 {
-        color: red;
-    }
-</style>
 
 <body>
+    <div class="timer-container">
+        <h1 class="title">Zamonaviy Timer</h1>
+        <div class="timer-display" id="display">00:00:00</div>
+        <div class="controls">
+            <button class="btn btn-start" id="startBtn">
+                <i class="fas fa-play"></i> Start
+            </button>
+            <button class="btn btn-pause" id="pauseBtn">
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button class="btn btn-stop" id="stopBtn">
+                <i class="fas fa-stop"></i> Stop
+            </button>
+            <button class="btn btn-reset" id="resetBtn">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+        </div>
+    </div>
 
-    <h1>salom men sindor</h1>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const display = document.getElementById('display');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const resetBtn = document.getElementById('resetBtn');
 
+            let seconds = 0;
+            let minutes = 0;
+            let hours = 0;
+            let timer;
+            let isRunning = false;
+
+            // Format time to always show 2 digits
+            function formatTime(time) {
+                return time < 10 ? `0${time}` : time;
+            }
+
+            // Update the timer display
+            function updateDisplay() {
+                display.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+            }
+
+            // Start the timer
+            function startTimer() {
+                if (!isRunning) {
+                    isRunning = true;
+                    timer = setInterval(() => {
+                        seconds++;
+
+                        if (seconds === 60) {
+                            seconds = 0;
+                            minutes++;
+                        }
+
+                        if (minutes === 60) {
+                            minutes = 0;
+                            hours++;
+                        }
+
+                        updateDisplay();
+                    }, 1000);
+                }
+            }
+
+            // Pause the timer
+            function pauseTimer() {
+                clearInterval(timer);
+                isRunning = false;
+            }
+
+            // Stop the timer
+            function stopTimer() {
+                clearInterval(timer);
+                isRunning = false;
+                seconds = 0;
+                minutes = 0;
+                hours = 0;
+                updateDisplay();
+            }
+
+            // Reset the timer
+            function resetTimer() {
+                stopTimer();
+                startTimer();
+            }
+
+            // Event listeners
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            stopBtn.addEventListener('click', stopTimer);
+            resetBtn.addEventListener('click', resetTimer);
+
+            // Initialize display
+            updateDisplay();
+        });
+    </script>
 </body>
 
 </html>
